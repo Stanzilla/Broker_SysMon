@@ -1,0 +1,5 @@
+package-as: Broker_SysMon
+
+externals:
+    /libs/CallbackHandler-1.0: http://svn.wowace.com/wowace/trunk/Ace3/CallbackHandler-1.0
+    /libs/LibStub: http://svn.wowace.com/wowace/tags/LibStub/1.0
