@@ -1,0 +1,12 @@
+## Interface: 20400
+## Title: Broker: SysMon
+## Notes: SysMon plugin for any DataBroker display.
+## Author: andreasg
+## Version: 1.0
+## X-Category: Miscellaneous
+
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+Broker_SysMon.lua
