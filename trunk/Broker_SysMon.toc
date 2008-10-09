@@ -4,10 +4,14 @@
 ## Author: andreasg
 ## Version: 1.0
 ## X-Category: Miscellaneous
+## OptionalDeps: Ace3
 
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+#@no-lib-strip@
 libs\AceTimer-3.0\AceTimer-3.0.xml
+#@end-no-lib-strip@
 
 Broker_SysMon.lua
