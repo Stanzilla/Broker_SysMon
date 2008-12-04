@@ -1,15 +1,15 @@
 local format = string.format
 local broker = LibStub("LibDataBroker-1.1")
-
+local L = LibStub:GetLibrary( "AceLocale-3.0" ):GetLocale( "Broker_SysMon" )
 local SysMon = {}
 LibStub("AceTimer-3.0"):Embed(SysMon)
 
 local icon = "Interface\\AddOns\\Broker_SysMon\\icon"
 
-local FPS = broker:NewDataObject("Broker_FPS", {icon = icon, suffix = "fps", label = "Framerate", type = "data source"})
-local Lag = broker:NewDataObject("Broker_Latency", {icon = icon, suffix = "ms", label = "Latency", type = "data source"})
-local MemUse = broker:NewDataObject("Broker_MemUse", {icon = icon, suffix = "MiB", label = "Memory Usage", type = "data source", OnClick = function() collectgarbage('collect') end})
-local IncreasingRate = broker:NewDataObject("Broker_IncreasingRate", {icon = icon, suffix = "KiB/s", label = "Increasing Rate", type = "data source"})
+local FPS = broker:NewDataObject(L["Broker_FPS"], {icon = icon, suffix = L["fps"], label = L["Framerate"], type = "data source"})
+local Lag = broker:NewDataObject(L["Broker_Latency"], {icon = icon, suffix = L["ms"], label = L["Latency"], type = "data source"})
+local MemUse = broker:NewDataObject(L["Broker_MemUse"], {icon = icon, suffix = L["MiB"], label = L["Memory Usage"], type = "data source", OnClick = function() collectgarbage('collect') end})
+local IncreasingRate = broker:NewDataObject(L["Broker_IncreasingRate"], {icon = icon, suffix = L["KiB/s"], label = L["Increasing Rate"], type = "data source"})
 
 local initialMemory, currentMemory, mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9, mem10
 local timeSinceLastUpdate, justEntered

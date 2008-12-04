@@ -1,4 +1,4 @@
-## Interface: 20400
+## Interface: 30000
 ## Title: Broker: SysMon
 ## Notes: SysMon plugin for any DataBroker display.
 ## Author: andreasg
@@ -12,6 +12,11 @@ libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 
 #@no-lib-strip@
 libs\AceTimer-3.0\AceTimer-3.0.xml
+libs\AceLocale-3.0\AceLocale-3.0.xml
 #@end-no-lib-strip@
+
+Locales\enUS.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
 
 Broker_SysMon.lua
