@@ -1,20 +1,38 @@
 local format = string.format
 local broker = LibStub("LibDataBroker-1.1")
-local L = LibStub:GetLibrary( "AceLocale-3.0" ):GetLocale( "Broker_SysMon" )
-local SysMon = {}
-LibStub("AceTimer-3.0"):Embed(SysMon)
+local L = LibStub("AceLocale-3.0"):GetLocale("Broker_SysMon")
 
-local icon = "Interface\\AddOns\\Broker_SysMon\\icon"
-
-local FPS = broker:NewDataObject(L["Broker_FPS"], {icon = icon, suffix = L["fps"], label = L["Framerate"], type = "data source"})
-local Lag = broker:NewDataObject(L["Broker_Latency"], {icon = icon, suffix = L["ms"], label = L["Latency"], type = "data source"})
-local MemUse = broker:NewDataObject(L["Broker_MemUse"], {icon = icon, suffix = L["MiB"], label = L["Memory Usage"], type = "data source", OnClick = function() collectgarbage('collect') end})
-local IncreasingRate = broker:NewDataObject(L["Broker_IncreasingRate"], {icon = icon, suffix = L["KiB/s"], label = L["Increasing Rate"], type = "data source"})
+local FPS = broker:NewDataObject(L["Broker_FPS"], {suffix = L["fps"], label = L["Framerate"]})
+local Lag = broker:NewDataObject(L["Broker_Latency"], {suffix = L["ms"], label = L["Latency"]})
+local MemUse = broker:NewDataObject(L["Broker_MemUse"], {suffix = L["MiB"], label = L["Memory Usage"], OnClick = function() collectgarbage("collect") end})
+local IncreasingRate = broker:NewDataObject(L["Broker_IncreasingRate"], {suffix = L["KiB/s"], label = L["Increasing Rate"]})
 
 local initialMemory, currentMemory, mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9, mem10
 local timeSinceLastUpdate, justEntered
 
-function SysMon:OnUpdate()
+local brokers = {
+    [FPS] = function() return floor(GetFramerate() + 0.5) end,
+    [Lag] = function() return select(3, GetNetStats()) end,
+    [MemUse] = function() return format("%.1f", currentMemory / 1024) end,
+    [IncreasingRate] = function() return format("%.1f",((currentMemory - mem10) / 10)) end,
+}
+
+local icon = "Interface\\AddOns\\Broker_SysMon\\icon"
+for k, v in pairs(brokers) do
+	k.OnTooltipShow = function(tt)
+		tt:AddLine(k.label)
+		tt:AddLine(format("%s %s", v(), k.suffix))
+	end
+	k.icon = icon
+	k.type = "data source"
+end
+
+local f = CreateFrame("Frame")
+local total = 0
+f:SetScript("OnUpdate", function(self, elapsed)
+	total = total + elapsed
+	if total < 1 then return end
+	total = 0
 	if not timeSinceLastUpdate then
 		timeSinceLastUpdate = 0
 	end
@@ -22,7 +40,7 @@ function SysMon:OnUpdate()
 
 	if not (justEntered) then
 		if timeSinceLastUpdate >= 10 then
-			initialMemory = collectgarbage('count')
+			initialMemory = collectgarbage("count")
 			currentMemory = initialMemory
 			mem1 = currentMemory
 			mem2 = currentMemory
@@ -42,45 +60,21 @@ function SysMon:OnUpdate()
 	else
 		mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9, mem10 =
 			currentMemory, mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9
-		currentMemory = collectgarbage('count')
+		currentMemory = collectgarbage("count")
 	end
 	if timeSinceLastUpdate >= 10 then
 		timeSinceLastUpdate = nil
 	end
-	MemUse:Update()
-	IncreasingRate:Update()
-	Lag:Update()
-	FPS:Update()
-end
-
-function FPS:Update()
-	local framerate = floor(GetFramerate() + 0.5)
-	
-	self.value = framerate
-	self.text = format("%s %s", framerate, self.suffix)
-end
-
-function Lag:Update()
-	local latency = select(3, GetNetStats())
-	
-	self.value = latency
-	self.text = format("%s %s", latency, self.suffix)
-end
-
-function MemUse:Update()
-	local mem = format("%.1f", currentMemory / 1024)
-	self.value = mem
-	self.text = format("%s %s", mem, self.suffix)
-end
-
-function IncreasingRate:Update()
 	if not mem10 then
 		mem10 = currentMemory
 	end
-	local currentRate = format("%.1f",((currentMemory - mem10) / 10))
-	self.value = currentRate
-	self.text = format("%s %s", currentRate, self.suffix)
-end
+	for k, v in pairs(brokers) do
+		local value = v()
+	    k.value = value
+	    k.text = format("%s %s", value, k.suffix)
+	end
+end)
+f:Show()
 
-SysMon:ScheduleRepeatingTimer("OnUpdate", 1)
-collectgarbage('collect')
+collectgarbage("collect")
+
