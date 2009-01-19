@@ -14,6 +14,7 @@ L["Latency"] = true
 L["Broker_MemUse"] = true
 L["MiB"] = true
 L["Memory Usage"] = true
+L["List above shows the top 5 addons with regards to memory usage."] = true
 -- Broker_IncreasingRate
 L["Broker_IncreasingRate"] = true
 L["KiB/s"] = true
