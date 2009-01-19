@@ -107,6 +107,7 @@ local function everySecond()
 		end
 	end
 	seconds = seconds + 1
+	if seconds == 1000 then seconds = 0 end
 end
 
 local f = CreateFrame("Frame")
