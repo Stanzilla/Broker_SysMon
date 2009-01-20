@@ -12,9 +12,10 @@ L["ms"] = "毫秒"
 L["Latency"] = "延迟"
 -- Broker_MemUse
 L["Broker_MemUse"] = "内存占用"
-L["MiB"] = "MiB"
+L["mb"] = "MiB"
 L["Memory Usage"] = "内存占用"
 -- Broker_IncreasingRate
 L["Broker_IncreasingRate"] = "增长率"
-L["KiB/s"] = "KiB/s"
+L["kbs"] = "KiB/s"
 L["Increasing Rate"] = "增长率"
+

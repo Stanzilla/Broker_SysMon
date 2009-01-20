@@ -37,7 +37,7 @@ local Lag = broker:NewDataObject(L["Broker_Latency"], {
 
 local rate = {}
 local IncreasingRate = broker:NewDataObject(L["Broker_IncreasingRate"], {
-	suffix = L["KiB/s"],
+	suffix = L["kbs"],
 	label = L["Increasing Rate"],
 	icon = icon,
 	type = "data source",
@@ -52,12 +52,12 @@ local function memorySorter(a, b)
 end
 local function formatMemory(addon)
 	local n = GetAddOnMemoryUsage(addon)
-	if n > 1024 then return format("%.2f MiB", n / 1024)
-	else return format("%.2f KiB", n) end
+	if n > 1024 then return format("%.2f mb", n / 1024)
+	else return format("%.2f kb", n) end
 end
 local ttFormat = "%d. %s"
 local MemUse = broker:NewDataObject(L["Broker_MemUse"], {
-	suffix = L["MiB"],
+	suffix = L["mb"],
 	label = L["Memory Usage"],
 	icon = icon,
 	type = "data source",
