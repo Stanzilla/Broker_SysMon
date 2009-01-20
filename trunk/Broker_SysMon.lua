@@ -70,7 +70,7 @@ local MemUse = broker:NewDataObject(L["Broker_MemUse"], {
 			tt:AddDoubleLine(ttFormat:format(i, addons[i]), formatMemory(addons[i]), 1, 1, 1, 0.2, 1, 0.2)
 		end
 		tt:AddLine(" ")
-		tt:AddLine(L["List above shows the top 5 addons with regards to memory usage."], 0.2, 1, 0.2, 1)
+		tt:AddLine(L["List above shows the top %d addons with regards to memory usage."]:format(NUM_ADDONS), 0.2, 1, 0.2, 1)
 	end,
 })
 
