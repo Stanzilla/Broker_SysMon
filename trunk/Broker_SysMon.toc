@@ -2,7 +2,7 @@
 ## Title: Broker: SysMon
 ## Notes: SysMon plugin for any DataBroker display.
 ## Author: andreasg
-## Version: 1.0
+## Version: @project-version@
 ## X-Category: Miscellaneous
 ## OptionalDeps: Ace3
 
