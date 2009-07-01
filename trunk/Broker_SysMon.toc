@@ -1,7 +1,7 @@
 ## Interface: 30100
 ## Title: Broker: SysMon
 ## Notes: SysMon plugin for any DataBroker display.
-## Author: andreasg
+## Author: Rabbit
 ## Version: @project-version@
 ## X-Category: Miscellaneous
 ## OptionalDeps: Ace3, LibCrayon-3.0
