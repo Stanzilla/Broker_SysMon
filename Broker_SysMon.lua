@@ -16,6 +16,7 @@ local UPDATE_RATE_MEMORY = 30
 local format = string.format
 local broker = LibStub("LibDataBroker-1.1")
 local L = LibStub("AceLocale-3.0"):GetLocale("Broker_SysMon")
+local Crayon = LibStub:GetLibrary("LibCrayon-3.0")
 
 local icon = "Interface\\AddOns\\Broker_SysMon\\icon"
 
@@ -75,13 +76,25 @@ local MemUse = broker:NewDataObject(L["Broker_MemUse"], {
 })
 
 local brokers = {
-    [FPS] = function() return floor(GetFramerate() + 0.5) end,
-    [Lag] = function() return select(3, GetNetStats()) end,
-    [MemUse] = function() return format("%.1f", collectgarbage("count") / 1024) end,
-    [IncreasingRate] = function()
-    	if #rate < 1 then return "0" end
-    	return format("%.1f",((rate[#rate] - rate[1]) / #rate))
-    end,
+	[FPS] = function()
+		local framerate = floor(GetFramerate() + 0.5)
+		return format("|cff%s%d|r", Crayon:GetThresholdHexColor(framerate / 60), framerate)
+	end,
+	[Lag] = function()
+		local latency = select(3, GetNetStats())
+		return format("|cff%s%d|r", Crayon:GetThresholdHexColor(latency, 1000, 500, 250, 100, 0), latency)
+	end,
+	[MemUse] = function()
+		local currentMemory = collectgarbage("count")
+		return format("|cff%s%.1f|r", Crayon:GetThresholdHexColor(currentMemory, 51200, 40960, 30520, 20480, 10240), currentMemory / 1024)
+	end,
+	[IncreasingRate] = function()
+		local currentRate = 0
+		if #rate > 0 then
+			currentRate = (rate[#rate] - rate[1]) / #rate
+		end
+		return format("|cff%s%.1f|r", Crayon:GetThresholdHexColor(currentRate, 30, 10, 3, 1, 0), currentRate)
+	end,
 }
 
 for k, v in pairs(brokers) do
