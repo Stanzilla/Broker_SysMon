@@ -20,31 +20,6 @@ local Crayon = LibStub:GetLibrary("LibCrayon-3.0", true)
 
 local icon = "Interface\\AddOns\\Broker_SysMon\\icon"
 
-local FPS = broker:NewDataObject(L["Broker_FPS"], {
-	suffix = L["fps"],
-	label = L["Framerate"],
-	icon = icon,
-	type = "data source",
-	interval = UPDATE_RATE_FPS,
-})
-
-local Lag = broker:NewDataObject(L["Broker_Latency"], {
-	suffix = L["ms"],
-	label = L["Latency"],
-	icon = icon,
-	type = "data source",
-	interval = UPDATE_RATE_LATENCY,
-})
-
-local rate = {}
-local IncreasingRate = broker:NewDataObject(L["Broker_IncreasingRate"], {
-	suffix = L["kbs"],
-	label = L["Increasing Rate"],
-	icon = icon,
-	type = "data source",
-	interval = UPDATE_RATE_INCREASING_RATE,
-})
-
 local addons = {}
 local function memorySorter(a, b)
 	local aM = GetAddOnMemoryUsage(a)
@@ -57,7 +32,61 @@ local function formatMemory(addon)
 	else return format("%.2f kb", n) end
 end
 local ttFormat = "%d. %s"
-local MemUse = broker:NewDataObject(L["Broker_MemUse"], {
+local rate = {}
+
+local brokers = {
+broker:NewDataObject(L["Broker_FPS"], {
+	suffix = L["fps"],
+	label = L["Framerate"],
+	icon = icon,
+	type = "data source",
+	interval = UPDATE_RATE_FPS,
+	func =
+		Crayon and
+			function()
+				local framerate = floor(GetFramerate() + 0.5)
+				return format("|cff%s%d|r", Crayon:GetThresholdHexColor(framerate / 60), framerate)
+			end
+		or
+			function() return floor(GetFramerate() + 0.5) end
+}),
+broker:NewDataObject(L["Broker_Latency"], {
+	suffix = L["ms"],
+	label = L["Latency"],
+	icon = icon,
+	type = "data source",
+	interval = UPDATE_RATE_LATENCY,
+	func =
+		Crayon and
+			function()
+				local latency = select(3, GetNetStats())
+				return format("|cff%s%d|r", Crayon:GetThresholdHexColor(latency, 1000, 500, 250, 100, 0), latency)
+			end
+		or
+			function() return select(3, GetNetStats()) end
+}),
+broker:NewDataObject(L["Broker_IncreasingRate"], {
+	suffix = L["kbs"],
+	label = L["Increasing Rate"],
+	icon = icon,
+	type = "data source",
+	interval = UPDATE_RATE_INCREASING_RATE,
+	func =
+		Crayon and
+			function()
+				local currentRate = 0
+				if #rate > 0 then
+					currentRate = (rate[#rate] - rate[1]) / #rate
+				end
+				return format("|cff%s%.1f|r", Crayon:GetThresholdHexColor(currentRate, 30, 10, 3, 1, 0), currentRate)
+			end
+		or
+			function()
+				if #rate < 1 then return "0" end
+				return format("%.1f",((rate[#rate] - rate[1]) / #rate))
+			end
+}),
+broker:NewDataObject(L["Broker_MemUse"], {
 	suffix = L["mb"],
 	label = L["Memory Usage"],
 	icon = icon,
@@ -73,63 +102,37 @@ local MemUse = broker:NewDataObject(L["Broker_MemUse"], {
 		tt:AddLine(" ")
 		tt:AddLine(L["List above shows the top %d addons with regards to memory usage."]:format(NUM_ADDONS), 0.2, 1, 0.2, 1)
 	end,
+	func =
+		Crayon and
+			function()
+				local currentMemory = collectgarbage("count")
+				return format("|cff%s%.1f|r", Crayon:GetThresholdHexColor(currentMemory, 51200, 40960, 30520, 20480, 10240), currentMemory / 1024)
+			end
+		or
+			function() return format("%.1f", collectgarbage("count") / 1024) end
 })
-
-local brokers = nil
-if Crayon then
-brokers = {
-	[FPS] = function()
-		local framerate = floor(GetFramerate() + 0.5)
-		return format("|cff%s%d|r", Crayon:GetThresholdHexColor(framerate / 60), framerate)
-	end,
-	[Lag] = function()
-		local latency = select(3, GetNetStats())
-		return format("|cff%s%d|r", Crayon:GetThresholdHexColor(latency, 1000, 500, 250, 100, 0), latency)
-	end,
-	[MemUse] = function()
-		local currentMemory = collectgarbage("count")
-		return format("|cff%s%.1f|r", Crayon:GetThresholdHexColor(currentMemory, 51200, 40960, 30520, 20480, 10240), currentMemory / 1024)
-	end,
-	[IncreasingRate] = function()
-		local currentRate = 0
-		if #rate > 0 then
-			currentRate = (rate[#rate] - rate[1]) / #rate
-		end
-		return format("|cff%s%.1f|r", Crayon:GetThresholdHexColor(currentRate, 30, 10, 3, 1, 0), currentRate)
-	end,
 }
-else
-brokers = {
-	[FPS] = function() return floor(GetFramerate() + 0.5) end,
-	[Lag] = function() return select(3, GetNetStats()) end,
-	[MemUse] = function() return format("%.1f", collectgarbage("count") / 1024) end,
-	[IncreasingRate] = function()
-		if #rate < 1 then return "0" end
-		return format("%.1f",((rate[#rate] - rate[1]) / #rate))
-	end,
-}
-end
 
-for k, v in pairs(brokers) do
-	k.OnTooltipShow = function(tt)
-		tt:AddLine(k.label)
-		tt:AddLine(format("%s %s", v(), k.suffix))
-		if k.additionalTooltip then
+for i, broker in next, brokers do
+	broker.OnTooltipShow = function(tt)
+		tt:AddLine(broker.label)
+		tt:AddLine(format("%s %s", broker.func(), broker.suffix))
+		if broker.additionalTooltip then
 			tt:AddLine(" ")
-			k.additionalTooltip(tt)
+			broker.additionalTooltip(tt)
 		end
 	end
 end
 
 local seconds = 0
 local function everySecond()
-	table.insert(rate, collectgarbage("count"))
+	rate[#rate + 1] = collectgarbage("count")
 	if #rate > 10 then table.remove(rate, 1) end
-	for k, v in pairs(brokers) do
-		if seconds % k.interval == 0 then
-			local value = v()
-			k.value = value
-			k.text = format("%s %s", value, k.suffix)
+	for i, broker in next, brokers do
+		if seconds % broker.interval == 0 then
+			local value = broker.func()
+			broker.value = value
+			broker.text = format("%s %s", value, broker.suffix)
 		end
 	end
 	seconds = seconds + 1
@@ -148,12 +151,12 @@ f:SetScript("OnEvent", function(self, event, addon)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, GetNumAddOns() do
 			if IsAddOnLoaded(i) then
-				table.insert(addons, (GetAddOnInfo(i)))
+				addons[#addons + 1] = GetAddOnInfo(i)
 			end
 		end
 		self:RegisterEvent("ADDON_LOADED")
 	else
-		table.insert(addons, addon)
+		addons[#addons + 1] = addon
 	end
 end)
 f:RegisterEvent("PLAYER_LOGIN")
