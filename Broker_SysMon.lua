@@ -34,6 +34,16 @@ end
 local ttFormat = "%d. %s"
 local rate = {}
 
+local function tooltip(tt, button)
+	local plugin = broker:GetDataObjectByName(button.pluginName)
+	tt:AddLine(plugin.label)
+	tt:AddLine(format("%s %s", plugin.func(), plugin.suffix))
+	if plugin.additionalTooltip then
+		tt:AddLine(" ")
+		plugin.additionalTooltip(tt)
+	end
+end
+
 local brokers = {
 broker:NewDataObject(L["Broker_FPS"], {
 	suffix = L["fps"],
@@ -41,6 +51,7 @@ broker:NewDataObject(L["Broker_FPS"], {
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_FPS,
+	OnTooltipShow = tooltip,
 	func =
 		Crayon and
 			function()
@@ -56,6 +67,7 @@ broker:NewDataObject(L["Broker_Latency"], {
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_LATENCY,
+	OnTooltipShow = tooltip,
 	func =
 		Crayon and
 			function()
@@ -71,6 +83,7 @@ broker:NewDataObject(L["Broker_IncreasingRate"], {
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_INCREASING_RATE,
+	OnTooltipShow = tooltip,
 	func =
 		Crayon and
 			function()
@@ -92,6 +105,7 @@ broker:NewDataObject(L["Broker_MemUse"], {
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_MEMORY,
+	OnTooltipShow = tooltip,
 	OnClick = function() collectgarbage("collect") end,
 	additionalTooltip = function(tt)
 		UpdateAddOnMemoryUsage()
@@ -112,17 +126,6 @@ broker:NewDataObject(L["Broker_MemUse"], {
 			function() return format("%.1f", collectgarbage("count") / 1024) end
 })
 }
-
-for i, broker in next, brokers do
-	broker.OnTooltipShow = function(tt)
-		tt:AddLine(broker.label)
-		tt:AddLine(format("%s %s", broker.func(), broker.suffix))
-		if broker.additionalTooltip then
-			tt:AddLine(" ")
-			broker.additionalTooltip(tt)
-		end
-	end
-end
 
 local seconds = 0
 local function everySecond()
