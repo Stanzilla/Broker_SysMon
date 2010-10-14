@@ -35,9 +35,8 @@ local ttFormat = "%d. %s"
 local rate = {}
 
 local brokers = {
-broker:NewDataObject(L["Broker_FPS"], {
+broker:NewDataObject(L["Framerate"], {
 	suffix = L["fps"],
-	label = L["Framerate"],
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_FPS,
@@ -50,9 +49,8 @@ broker:NewDataObject(L["Broker_FPS"], {
 		or
 			function() return floor(GetFramerate() + 0.5) end
 }),
-broker:NewDataObject(L["Broker_Latency"], {
+broker:NewDataObject(L["Latency"], {
 	suffix = L["ms"],
-	label = L["Latency"],
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_LATENCY,
@@ -65,9 +63,8 @@ broker:NewDataObject(L["Broker_Latency"], {
 		or
 			function() return select(3, GetNetStats()) end
 }),
-broker:NewDataObject(L["Broker_IncreasingRate"], {
+broker:NewDataObject(L["Increasing rate"], {
 	suffix = L["kbs"],
-	label = L["Increasing Rate"],
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_INCREASING_RATE,
@@ -86,9 +83,8 @@ broker:NewDataObject(L["Broker_IncreasingRate"], {
 				return format("%.1f",((rate[#rate] - rate[1]) / #rate))
 			end
 }),
-broker:NewDataObject(L["Broker_MemUse"], {
+broker:NewDataObject(L["Memory usage"], {
 	suffix = L["mb"],
-	label = L["Memory Usage"],
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_MEMORY,
@@ -161,6 +157,4 @@ f:SetScript("OnEvent", function(self, event, addon)
 end)
 f:RegisterEvent("PLAYER_LOGIN")
 f:Show()
-
-collectgarbage("collect")
 
