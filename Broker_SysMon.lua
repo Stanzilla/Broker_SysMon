@@ -7,7 +7,7 @@ local NUM_ADDONS = 30
 -- How often the various plugins should update their label/text display
 -- (an update is always triggered when showing the tooltip)
 local UPDATE_RATE_FPS = 1
-local UPDATE_RATE_LATENCY = 1
+local UPDATE_RATE_LATENCY = 5
 local UPDATE_RATE_INCREASING_RATE = 1
 local UPDATE_RATE_MEMORY = 30
 
@@ -36,10 +36,16 @@ local rate = {}
 
 local brokers = {
 broker:NewDataObject(L["Framerate"], {
+	header = L["Framerate"],
 	suffix = L["fps"],
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_FPS,
+	additionalTooltip = function(tt)
+		tt:AddDoubleLine(L["Framerate"], floor(GetFramerate() + 0.5), 1, 1, 1, 0, 1, 0)
+		tt:AddLine(" ")
+		tt:AddLine(NEWBIE_TOOLTIP_FRAMERATE, 0.2, 1, 0.2, 1)
+	end,
 	func =
 		Crayon and
 			function()
@@ -50,10 +56,18 @@ broker:NewDataObject(L["Framerate"], {
 			function() return floor(GetFramerate() + 0.5) end
 }),
 broker:NewDataObject(L["Latency"], {
+	header = L["Latency"],
 	suffix = L["ms"],
 	icon = icon,
 	type = "data source",
 	interval = UPDATE_RATE_LATENCY,
+	additionalTooltip = function(tt)
+		local _, _, latencyHome, latencyWorld = GetNetStats()
+		tt:AddDoubleLine(L["Home"], L["%.0f ms"]:format(latencyHome), 1, 1, 1, 0, 1, 0)
+		tt:AddDoubleLine(L["World"], L["%.0f ms"]:format(latencyWorld), 1, 1, 1, 0, 1, 0)
+		tt:AddLine(" ")
+		tt:AddLine(NEWBIE_TOOLTIP_LATENCY, 0.2, 1, 0.2, 1)
+	end,
 	func =
 		Crayon and
 			function()
@@ -64,6 +78,7 @@ broker:NewDataObject(L["Latency"], {
 			function() return select(3, GetNetStats()) end
 }),
 broker:NewDataObject(L["Increasing rate"], {
+	header = L["Increasing rate"],
 	suffix = L["kbs"],
 	icon = icon,
 	type = "data source",
@@ -84,6 +99,7 @@ broker:NewDataObject(L["Increasing rate"], {
 			end
 }),
 broker:NewDataObject(L["Memory usage"], {
+	header = L["Memory usage"],
 	suffix = L["mb"],
 	icon = icon,
 	type = "data source",
@@ -111,11 +127,11 @@ broker:NewDataObject(L["Memory usage"], {
 
 for i, broker in next, brokers do
 	broker.OnTooltipShow = function(tt)
-		tt:AddLine(broker.label)
-		tt:AddLine(format("%s %s", broker.func(), broker.suffix))
+		tt:AddLine(broker.header)
 		if broker.additionalTooltip then
-			tt:AddLine(" ")
 			broker.additionalTooltip(tt)
+		else
+			tt:AddLine(format("%s %s", broker.func(), broker.suffix))
 		end
 	end
 end
