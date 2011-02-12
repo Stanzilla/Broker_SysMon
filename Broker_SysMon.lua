@@ -71,11 +71,11 @@ broker:NewDataObject(L["Latency"], {
 	func =
 		Crayon and
 			function()
-				local latency = select(3, GetNetStats())
+				local latency = select(4, GetNetStats())
 				return format("|cff%s%d|r", Crayon:GetThresholdHexColor(latency, 1000, 500, 250, 100, 0), latency)
 			end
 		or
-			function() return select(3, GetNetStats()) end
+			function() return select(4, GetNetStats()) end
 }),
 broker:NewDataObject(L["Increasing rate"], {
 	header = L["Increasing rate"],
