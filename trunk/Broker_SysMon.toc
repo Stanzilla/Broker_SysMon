@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70200
 ## Title: Broker: SysMon
 ## Notes: SysMon plugin for any DataBroker display.
 ## Author: Rabbit
