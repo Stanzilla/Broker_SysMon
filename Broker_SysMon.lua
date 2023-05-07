@@ -162,13 +162,15 @@ end)
 f:SetScript("OnEvent", function(self, event, addon)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, GetNumAddOns() do
-			if IsAddOnLoaded(i) then
+			if IsAddOnLoaded(i) and select(6, GetAddOnInfo(i)) == "INSECURE" then
 				addons[#addons + 1] = GetAddOnInfo(i)
 			end
 		end
 		self:RegisterEvent("ADDON_LOADED")
 	else
-		addons[#addons + 1] = addon
+		if select(6, GetAddOnInfo(addon)) == "INSECURE" then
+			addons[#addons + 1] = addon
+		end
 	end
 end)
 f:RegisterEvent("PLAYER_LOGIN")
