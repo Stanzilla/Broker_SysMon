@@ -1,0 +1,16 @@
+{
+    "Lua.diagnostics.globals": [
+        "NEWBIE_TOOLTIP_FRAMERATE",
+        "NEWBIE_TOOLTIP_LATENCY",
+        "CreateFrame",
+        "GetAddOnMemoryUsage",
+        "GetNumAddOns",
+        "UpdateAddOnMemoryUsage",
+        "IsAddOnLoaded",
+        "floor",
+        "GetNetStats",
+        "GetAddOnInfo",
+        "GetFramerate",
+        "LibStub"
+    ]
+}
